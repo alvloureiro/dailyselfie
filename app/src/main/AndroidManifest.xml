@@ -29,19 +29,6 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths"></meta-data>
         </provider>
-
-        <!--<activity
-            android:name="course.labs.dailyselfie.DailySelfieActivity"
-            android:label="DailySelfie"
-            android:parentActivityName="course.labs.dailyselfie.DailySelfieActivity"
-            tools:ignore="DuplicateActivity">
-
-            &lt;!&ndash; Parent activity meta-data to support 4.0 and lower &ndash;&gt;
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="course.labs.dailyselfie.DailySelfieActivity" />
-        </activity>-->
-
 </application>
 
 </manifest>

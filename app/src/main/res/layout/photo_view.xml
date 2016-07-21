@@ -8,11 +8,17 @@
         android:layout_width="160dp"
         android:layout_height="120dp"
         android:id="@+id/photo"
-        android:layout_weight="1"/>
+        android:layout_gravity="left" />
 
     <TextView
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:id="@+id/photo_timestamp"
-        android:layout_weight="1"/>
+        style="@style/Base.TextAppearance.AppCompat.Display2"
+        android:textColor="@color/abc_secondary_text_material_light"
+        android:textStyle="normal"
+        android:typeface="monospace"
+        android:textAppearance="@color/abc_secondary_text_material_light"
+        android:text="PhotFileName"
+        android:singleLine="true" />
 </LinearLayout>

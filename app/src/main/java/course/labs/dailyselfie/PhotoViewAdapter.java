@@ -2,6 +2,8 @@ package course.labs.dailyselfie;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -57,7 +59,7 @@ public class PhotoViewAdapter extends BaseAdapter {
         } else {
             holder = (ViewHolder) newView.getTag ();
         }
-        holder.photo.setImageBitmap (curr.getmPhotoBitmap ()); //we need to get the current photo path and decode to a bitmap
+        holder.photo.setImageBitmap (curr.getmPhotoBitmap ());
         holder.timestamp.setText (curr.getmImageFileName ());
         return newView;
     }
@@ -71,4 +73,6 @@ public class PhotoViewAdapter extends BaseAdapter {
         ImageView photo;
         TextView timestamp;
     }
+
+
 }

@@ -2,13 +2,19 @@ package course.labs.dailyselfie;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.media.ThumbnailUtils;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -36,11 +42,20 @@ public class DailySelfieActivity extends AppCompatActivity {
     private File mPhotoFile = null;
     private String mFileName = null;
     private String mFileTimeStamp = null;
+    private Bitmap mPhotoFullBitmap = null;
+    private int mTargetW = 0;
+    private int mTargetH = 0;
 
     @Override
     protected void onCreate (Bundle savedInstanceState) {
         super.onCreate (savedInstanceState);
         setContentView (R.layout.activity_daily_selfie);
+        Display display = getWindowManager().getDefaultDisplay();
+        DisplayMetrics metrics = new DisplayMetrics();
+        display.getMetrics(metrics);
+        mTargetW = metrics.widthPixels;
+        mTargetH = metrics.heightPixels;
+
         Toolbar toolbar = (Toolbar) findViewById (R.id.daily_selfie_toolbar);
         setSupportActionBar (toolbar);
 
@@ -62,32 +77,51 @@ public class DailySelfieActivity extends AppCompatActivity {
             case R.id.action_settings:
                 // User chose the "Settings" item, show the app settings UI...
                 return true;
-
             case R.id.action_photo:
                 Log.d (TAG, "Loading the camera app");
                 callTakePhotoIntent ();
                 return true;
-
             default:
                 // If we got here, the user's action was not recognized.
                 // Invoke the superclass to handle it.
                 return super.onOptionsItemSelected (item);
-
         }
     }
 
     @Override
     protected void onActivityResult (int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-            PhotoMetaData photoMetaData = new PhotoMetaData ();
-            photoMetaData.setmImageFileName (mPhotoFile.getName ());
-            photoMetaData.setmTimestamp (mFileTimeStamp);
-            photoMetaData.setmPhotoUri (Uri.fromFile (mPhotoFile));
-            photoMetaData.setmPhoto (mAbsPhotoFilePath);
-            Bundle extras = data.getExtras ();
-            Bitmap imageBitmap = (Bitmap) extras.get ("data");
-            photoMetaData.setmPhotoBitmap (imageBitmap);
-            mAdapter.add (photoMetaData);
+
+            if (setPic()) {
+                new CreateThumbnails().execute(mPhotoFullBitmap);
+            }
+        }
+    }
+
+    public void setPhotoBitmap(Bitmap photoBitmap) {
+        PhotoMetaData photoMetaData = new PhotoMetaData ();
+        photoMetaData.setmImageFileName (mPhotoFile.getName ());
+        photoMetaData.setmTimestamp (mFileTimeStamp);
+        photoMetaData.setmPhotoUri (Uri.fromFile (mPhotoFile));
+        photoMetaData.setmPhoto (mAbsPhotoFilePath);
+        photoMetaData.setmPhotoBitmap(photoBitmap);
+        mAdapter.add (photoMetaData);
+    }
+
+    private class CreateThumbnails extends AsyncTask<Bitmap, Void, Bitmap> {
+        @Override
+        protected Bitmap doInBackground(Bitmap... bitmaps) {
+            Bitmap photoBitmap = bitmaps[0];
+            if (photoBitmap != null) {
+                Bitmap thumbnail = ThumbnailUtils.extractThumbnail(photoBitmap, 160, 120);
+                if (thumbnail != null) return thumbnail;
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Bitmap bitmap) {
+            setPhotoBitmap(bitmap);
         }
     }
 
@@ -96,8 +130,7 @@ public class DailySelfieActivity extends AppCompatActivity {
 
         if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
 
-            storageDir = new File (
-                    Environment.getExternalStoragePublicDirectory (Environment.DIRECTORY_PICTURES), ALBUM_NAME);
+            storageDir = Environment.getExternalStoragePublicDirectory (Environment.DIRECTORY_PICTURES);
 
             if (storageDir != null) {
                 if (! storageDir.mkdirs()) {
@@ -119,8 +152,8 @@ public class DailySelfieActivity extends AppCompatActivity {
         // Create an image file name
         mFileTimeStamp = new SimpleDateFormat ("yyyyMMdd_HHmmss").format(new Date ());
         mFileName = PHOTO_FILE_PREFIX + mFileTimeStamp + "_";
-        File albumFile = getPhotoAlbumDir();
-        File imageFile = File.createTempFile(mFileName, PHOTO_FILE_SUFFIX, albumFile);
+        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File imageFile = File.createTempFile(mFileName, PHOTO_FILE_SUFFIX, storageDir);
         return imageFile;
     }
 
@@ -129,15 +162,43 @@ public class DailySelfieActivity extends AppCompatActivity {
         if (takePictureIntent.resolveActivity (getPackageManager ()) != null) {
             try {
                 mPhotoFile = createPhotoFile ();
-                mAbsPhotoFilePath = mPhotoFile.getAbsolutePath ();
-                takePictureIntent.putExtra (MediaStore.EXTRA_OUTPUT, Uri.fromFile (mPhotoFile));
+
             } catch (IOException e) {
                 e.printStackTrace ();
                 mPhotoFile = null;
                 mAbsPhotoFilePath = null;
             }
 
-            startActivityForResult (takePictureIntent, REQUEST_IMAGE_CAPTURE);
+            if (null != mPhotoFile) {
+                mAbsPhotoFilePath = mPhotoFile.getAbsolutePath ();
+                Uri fileUri = FileProvider.getUriForFile(this, "com.example.android.fileprovider",
+                        mPhotoFile);
+                takePictureIntent.putExtra (MediaStore.EXTRA_OUTPUT, fileUri);
+                startActivityForResult (takePictureIntent, REQUEST_IMAGE_CAPTURE);
+            }
         }
+    }
+
+    private boolean setPic() {
+        // Get the dimensions of the bitmap
+        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+        bmOptions.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(mAbsPhotoFilePath, bmOptions);
+        int photoW = bmOptions.outWidth;
+        int photoH = bmOptions.outHeight;
+
+        // Determine how much to scale down the image
+        int scaleFactor = Math.min(photoW/mTargetW == 0 ? 1 : mTargetW,
+                photoH/mTargetH == 0 ? 1 : mTargetH);
+
+        // Decode the image file into a Bitmap sized to fill the View
+        bmOptions.inJustDecodeBounds = false;
+        bmOptions.inSampleSize = scaleFactor;
+        bmOptions.inPurgeable = true;
+
+        mPhotoFullBitmap = BitmapFactory.decodeFile(mAbsPhotoFilePath, bmOptions);
+        if (mPhotoFullBitmap != null) return true;
+
+        return false;
     }
 }
