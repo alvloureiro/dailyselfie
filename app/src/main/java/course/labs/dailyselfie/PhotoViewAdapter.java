@@ -1,9 +1,6 @@
 package course.labs.dailyselfie;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.os.AsyncTask;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,7 +9,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 /**
  * Created by loureiro on 19/07/16.
@@ -73,6 +69,5 @@ public class PhotoViewAdapter extends BaseAdapter {
         ImageView photo;
         TextView timestamp;
     }
-
 
 }
