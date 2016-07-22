@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Window;
 import android.widget.ImageView;
 
@@ -21,8 +22,9 @@ public class ShowPhotoActivity extends Activity {
         setContentView(R.layout.activity_show_photo);
         mPhotoBitmap = (ImageView) findViewById(R.id.photo_imageview);
         Intent intent = getIntent();
-        String filename = intent.getStringExtra("FILENAME");
-        String filepath = intent.getStringExtra("FILEPATH");
+        String filename = intent.getStringExtra(DailySelfieActivity.PHOTOFILENAME);
+        String filepath = intent.getStringExtra(DailySelfieActivity.PHOTOFILEPATH);
+
 
         setTitle(filename);
         new LoadBitmapPhoto(this, mPhotoBitmap).execute(filepath);
@@ -41,7 +43,7 @@ public class ShowPhotoActivity extends Activity {
         @Override
         protected Bitmap doInBackground(String... params) {
             String filepath = params[0];
-
+            Log.d(TAG, "Loadiing the photo from: "+filepath);
             return loadImage(filepath);
         }
 

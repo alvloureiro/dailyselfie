@@ -2,75 +2,64 @@ package course.labs.dailyselfie;
 
 import android.graphics.Bitmap;
 import android.net.Uri;
-import android.widget.ImageView;
 
 /**
  * Created by loureiro on 19/07/16.
  */
 public class PhotoMetaData {
     private static final String TAG = PhotoMetaData.class.getSimpleName ();
-    private String mTimestamp;
-    private String mCurrentPhotoPath;
-    private Uri mPhotoUri;
-    private String mImageFileName;
-    private Bitmap mPhotoBitmap;
+
+    private String mPath;
+    private String mName;
+    private String mThumbPath;
+    private Bitmap mThumbnail;
 
     public PhotoMetaData() {}
 
-    public PhotoMetaData (String mTimestamp, String mPhoto, Uri mPhotoUri, String mImageFileName) {
-        this.mTimestamp = mTimestamp;
-        this.mCurrentPhotoPath = mPhoto;
-        this.mPhotoUri = mPhotoUri;
-        this.mImageFileName = mImageFileName;
+    public PhotoMetaData(String mPath, String mName, String mThumbPath) {
+        this.mPath = mPath;
+        this.mName = mName;
+        this.mThumbPath = mThumbPath;
     }
 
-    public String getmTimestamp () {
-        return mTimestamp;
+    public String getmPath() {
+        return mPath;
     }
 
-    public void setmTimestamp (String mTimestamp) {
-        this.mTimestamp = mTimestamp;
+    public void setmPath(String mPath) {
+        this.mPath = mPath;
     }
 
-    public String getmCurrentPhotoPath () {
-        return mCurrentPhotoPath;
+    public String getmName() {
+        return mName;
     }
 
-    public void setmPhoto (String mPhoto) {
-        this.mCurrentPhotoPath = mPhoto;
+    public void setmName(String mName) {
+        this.mName = mName;
     }
 
-    public Uri getmPhotoUri () {
-        return mPhotoUri;
+    public String getmThumbPath() {
+        return mThumbPath;
     }
 
-    public void setmPhotoUri (Uri mPhotoUri) {
-        this.mPhotoUri = mPhotoUri;
+    public void setmThumbPath(String mThumbPath) {
+        this.mThumbPath = mThumbPath;
     }
 
-    public String getmImageFileName () {
-        return mImageFileName;
+    public Bitmap getmThumbnail() {
+        return mThumbnail;
     }
 
-    public void setmImageFileName (String mImageFileName) {
-        this.mImageFileName = mImageFileName;
-    }
-
-    public Bitmap getmPhotoBitmap () {
-        return mPhotoBitmap;
-    }
-
-    public void setmPhotoBitmap (Bitmap mPhotoBitmap) {
-        this.mPhotoBitmap = mPhotoBitmap;
+    public void setmThumbnail(Bitmap mThumbnail) {
+        this.mThumbnail = mThumbnail;
     }
 
     @Override
-    public String toString () {
+    public String toString() {
         return "PhotoMetaData{" +
-                "mTimestamp='" + mTimestamp + '\'' +
-                ", mCurrentPhotoPath=" + mCurrentPhotoPath +
-                ", mPhotoUri=" + mPhotoUri +
-                ", mImageFileName='" + mImageFileName + '\'' +
+                "mPath='" + mPath + '\'' +
+                ", mName='" + mName + '\'' +
+                ", mThumbPath='" + mThumbPath + '\'' +
                 '}';
     }
 }

@@ -55,8 +55,8 @@ public class PhotoViewAdapter extends BaseAdapter {
         } else {
             holder = (ViewHolder) newView.getTag ();
         }
-        holder.photo.setImageBitmap (curr.getmPhotoBitmap ());
-        holder.timestamp.setText (curr.getmImageFileName ());
+        holder.photo.setImageBitmap (curr.getmThumbnail());
+        holder.timestamp.setText (curr.getmName());
         return newView;
     }
 

@@ -11,7 +11,7 @@
         android:layout_gravity="left" />
 
     <TextView
-        android:layout_width="0dp"
+        android:layout_width="100dp"
         android:layout_height="wrap_content"
         android:id="@+id/photo_timestamp"
         style="@style/Base.TextAppearance.AppCompat.Display2"
