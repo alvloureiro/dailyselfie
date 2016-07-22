@@ -18,6 +18,7 @@ import android.view.Display;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.google.android.gms.appindexing.Action;
@@ -62,6 +63,17 @@ public class DailySelfieActivity extends AppCompatActivity {
         mPhotoListView = (ListView) findViewById (R.id.photo_listview);
         mAdapter = new PhotoViewAdapter (getApplicationContext ());
         mPhotoListView.setAdapter (mAdapter);
+        mPhotoListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Log.d(TAG, "position: " + position);
+                PhotoMetaData photo = (PhotoMetaData) mAdapter.getItem(position);
+                Intent intent = new Intent(getApplicationContext(), ShowPhotoActivity.class);
+                intent.putExtra("FILENAME", photo.getmImageFileName());
+                intent.putExtra("FILEPATH", photo.getmCurrentPhotoPath());
+                startActivity(intent);
+            }
+        });
     }
 
     @Override
